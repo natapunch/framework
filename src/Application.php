@@ -8,14 +8,14 @@ namespace Punchenko\Framework;
 
 class Application
 {
-    /**
-     * Application constructor.
-     */
+
     public function run()
     {
 
     }
-
+    /**
+     * Application constructor.
+     */
     public function __construct()
     {
     }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Punchenko\Framework\Response;
 /**
  * Class Response

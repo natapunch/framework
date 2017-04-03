@@ -1,7 +1,6 @@
 <?php
 
-namespace Punchenko\Framework\Router\Exceptions;
-
+namespace Punchenko\Framework\Router\Exception;
 
 /**
  * Throws if router name not found

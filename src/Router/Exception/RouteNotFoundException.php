@@ -1,6 +1,6 @@
 <?php
 
-namespace Punchenko\Framework\Router\Exceptions;
+namespace Punchenko\Framework\Router\Exception;
 
 /**
  * Exception throws if route is not found

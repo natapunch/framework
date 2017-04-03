@@ -2,7 +2,6 @@
 
 namespace Punchenko\Framework\Request;
 
-
 /**
  * Class Request Singleton
  * @package Punchenko\Framework\Request
@@ -10,6 +9,9 @@ namespace Punchenko\Framework\Request;
 class Request
 {
     private static $request = null;
+    /**
+     * @var array $headers
+     */
     protected $headers = [];
     protected $raw = '';
     protected $buffer = '';
@@ -20,12 +22,16 @@ class Request
     public function __construct()
     {
         $headers = [];
-        foreach ($_SERVER as $key => $value) {
-            if (substr($key, 0, 5) == "HTTP_") {
-                $key = str_replace(" ", "-", ucwords(strtolower(str_replace("_", " ", substr($key, 5)))));
-                $headers[$key] = $value;
-            } else {
-                $headers[$key] = $value;
+        if (function_exists('getallheaders')) {
+            $headers = getallheaders();
+        } else {
+            foreach ($_SERVER as $key => $value) {
+                if (substr($key, 0, 5) == "HTTP_") {
+                    $key = str_replace(" ", "-", ucwords(strtolower(str_replace("_", " ", substr($key, 5)))));
+                    $headers[$key] = $value;
+                } else {
+                    $headers[$key] = $value;
+                }
             }
         }
         $this->headers = $headers;
@@ -64,10 +70,6 @@ class Request
         return $_SERVER["REQUEST_METHOD"];
     }
 
-    private function __clone()
-    {
-    }
-
     /**
      * Get request header value
      * @param null $key
@@ -79,5 +81,40 @@ class Request
             return $this->headers;
         }
         return isset($this->headers[$key]) ? $this->headers[$key] : null;
+    }
+
+    /**
+     * If $method does not exist - we use $method __call
+     * @param $method
+     * @param $args
+     * @return float|int|mixed|string
+     */
+    public function __call($method, $args)
+    {
+        if (preg_match('/^get([\w\d_]*)/', $method, $match)) {
+            $filter = @strtolower($match[1]);
+            $param = array_shift($args);
+            $default = array_shift($args);
+            $raw = isset($_REQUEST[$param]) ? $_REQUEST[$param] : $default;
+            switch ($filter) {
+                case 'raw':
+                    $filtered = $raw;
+                    break;
+                case 'int':
+                    $filtered = (int)$raw;
+                    break;
+                case 'float':
+                    $filtered = (float)$raw;
+                    break;
+                case 'string':
+                default:
+                    $filtered = preg_replace('/[^\s\w\d_\-\.\,\+\(\)]*/Ui', '', urldecode($raw));
+            }
+            return $filtered;
+        }
+    }
+
+    private function __clone()
+    {
     }
 }

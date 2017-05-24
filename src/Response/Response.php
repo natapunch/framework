@@ -26,7 +26,7 @@ class Response
     /**
      * @var string
      */
-    protected $body = '';
+    protected $content = '';
     /**
      * @var array
      */
@@ -37,10 +37,10 @@ class Response
      * @param string $body
      * @param int $code
      */
-    public function __construct($body = '', $code = self::DEFAULT_CODE)
+    public function __construct($content = '', $code = self::DEFAULT_CODE)
     {
         $this->code = $code;
-        $this->setBody($body);
+        $this->setBody($content);
         $this->addHeader(self::DEFAULT_KEY, self::DEFAULT_VALUE);
     }
 
@@ -48,9 +48,9 @@ class Response
      * Set content
      * @param $body
      */
-    public function setBody($body)
+    public function setBody($content)
     {
-        $this->body = $body;
+        $this->content = $content;
     }
 
     /**
@@ -91,6 +91,6 @@ class Response
      */
     public function sendBody()
     {
-        echo $this->body;
+        echo $this->content;
     }
 }

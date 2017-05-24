@@ -14,14 +14,15 @@ class RedirectResponse extends Response
      * @param int $code
      * @param string $redirect_uri
      */
+
     public function __construct($code = self::DEFAULT_CODE, string $redirect_uri)
     {
         $this->code = $code;
         $this->addHeader('Location', $redirect_uri);
     }
 
-    public function send()
+    public function sendBody()
     {
-        $this->sendHeaders();
+        //Do nothing
     }
 }

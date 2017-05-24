@@ -2,6 +2,7 @@
 namespace Punchenko\Framework\Router;
 
 use Punchenko\Framework\Request\Request;
+use Punchenko\Framework\Router\Exception\RouteKeyNotFoundException;
 use Punchenko\Framework\Router\Exception\RouteMethodNotFoundException;
 use Punchenko\Framework\Router\Exception\RouteNotFoundException;
 
@@ -17,13 +18,16 @@ class Router
      * Routing map
      */
     private $routes = [];
+    private $request;
 
     /**
      * Router constructor.
      * @param array $config
      */
-    public function __construct(array $config)
+    public function __construct(array $config, Request $request)
     {
+        $this->request=$request;
+        $config=$config->get('routes',[]);
         foreach ($config as $key => $value) {
             $existed_variables = $this->getExistedVariables($value);
             $this->routes[$key] = [
@@ -121,4 +125,26 @@ class Router
         }
         throw new RouteNotFoundException("Route not found");
     }
+
+    /**
+     * Get link
+     * @param string $route_name
+     * @param array $params
+     * @return string
+     * @throws RouteKeyNotFoundException
+     * @throws RouteNotFoundException
+     */
+    public function getLink(string $route_name, array $params = []): string
+    {
+        if (!array_key_exists($route_name, $this->routes))
+            throw new RouteNotFoundException("\"$route_name\" route was not found in config");
+        preg_match_all('/\{([\w\d_]+)\}/', $link = $this->routes[$route_name]['origin'], $matches);
+        foreach ($matches[1] as $key) {
+            if (!array_key_exists($key, $params))
+                throw new RouteKeyNotFoundException("Key \"$key\" is required for route \"$route_name\"");
+            $link = str_replace("{" . $key . "}", $params[$key], $link);
+        }
+        return $link;
+    }
+
 }

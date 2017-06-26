@@ -23,6 +23,6 @@ class RedirectResponse extends Response
 
     public function sendBody()
     {
-        //Do nothing
+        
     }
 }
